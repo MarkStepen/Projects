@@ -1,0 +1,101 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        05/24/2017  15:32:55  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+D:\C51\C51\BIN\BL51.EXE STARTUP.obj, 74HC595.obj TO LED
+
+
+MEMORY MODEL: SMALL
+
+
+INPUT MODULES INCLUDED:
+  STARTUP.obj (?C_STARTUP)
+  74HC595.obj (74HC595)
+  D:\C51\C51\LIB\C51S.LIB (?C_INIT)
+  D:\C51\C51\LIB\C51S.LIB (?C?SIDIV)
+  D:\C51\C51\LIB\C51S.LIB (?C?UIDIV)
+
+
+LINK MAP OF MODULE:  LED (?C_STARTUP)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0027H     UNIT         ?DT?74HC595
+            DATA    002FH     0005H     UNIT         _DATA_GROUP_
+            IDATA   0034H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0004H     UNIT         ?C_INITSEG
+            CODE    0007H     0003H     UNIT         ?PR?TIMER0_INT?74HC595
+                    000AH     0001H                  *** GAP ***
+            CODE    000BH     0003H     ABSOLUTE     
+            CODE    000EH     011BH     UNIT         ?PR?MAIN?74HC595
+            CODE    0129H     008CH     UNIT         ?C_C51STARTUP
+            CODE    01B5H     008BH     UNIT         ?C?LIB_CODE
+            CODE    0240H     0073H     UNIT         ?PR?RH?74HC595
+            CODE    02B3H     0043H     UNIT         ?PR?COM?74HC595
+            CODE    02F6H     0041H     UNIT         ?PR?LED4_DISPLAY?74HC595
+            CODE    0337H     0021H     UNIT         ?PR?_LED_OUT?74HC595
+            CODE    0358H     0017H     UNIT         ?PR?_DELAY?74HC595
+            CODE    036FH     0011H     UNIT         ?CO?74HC595
+            CODE    0380H     000DH     UNIT         ?PR?DELAY_10US?74HC595
+
+
+
+OVERLAY MAP OF MODULE:   LED (?C_STARTUP)
+
+
+SEGMENT                            DATA_GROUP 
+  +--> CALLED SEGMENT            START    LENGTH
+------------------------------------------------
+?C_C51STARTUP                    -----    -----
+  +--> ?PR?MAIN?74HC595
+  +--> ?C_INITSEG
+
+?PR?MAIN?74HC595                 002FH    0004H
+  +--> ?PR?_DELAY?74HC595
+BL51 BANKED LINKER/LOCATER V6.22                                                      05/24/2017  15:32:55  PAGE 2
+
+
+  +--> ?PR?RH?74HC595
+  +--> ?PR?LED4_DISPLAY?74HC595
+
+?PR?RH?74HC595                   -----    -----
+  +--> ?PR?_DELAY?74HC595
+  +--> ?PR?DELAY_10US?74HC595
+  +--> ?PR?COM?74HC595
+
+?PR?DELAY_10US?74HC595           0033H    0001H
+
+?PR?COM?74HC595                  -----    -----
+  +--> ?PR?DELAY_10US?74HC595
+
+?PR?LED4_DISPLAY?74HC595         -----    -----
+  +--> ?CO?74HC595
+  +--> ?PR?_LED_OUT?74HC595
+
+?PR?_LED_OUT?74HC595             -----    -----
+  +--> ?CO?74HC595
+
+
+
+SYMBOL TABLE OF MODULE:  LED (?C_STARTUP)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        ?C?SIDIV
+  C:01B5H         PUBLIC        ?C?SIDIV
+  -------         ENDMOD        ?C?SIDIV
+
+  -------         MODULE        ?C?UIDIV
+  C:01EBH         PUBLIC        ?C?UIDIV
+  -------         ENDMOD        ?C?UIDIV
+
+Program Size: data=53.0 xdata=0 code=908
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,330 @@
+C51 COMPILER V9.01   74HC595                                                               05/26/2017 13:04:34 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE 74HC595
+OBJECT MODULE PLACED IN 74HC595.OBJ
+COMPILER INVOKED BY: D:\C51\C51\BIN\C51.EXE 74HC595.c
+
+line level    source
+
+   1          #include <reg51.h>
+   2          #include <intrins.h> 
+   3          #define uchar unsigned char
+   4          #define   Data_0_time    4
+   5          #define uint unsigned int
+   6          
+   7          typedef unsigned char  U8;       /* defined for unsigned 8-bits integer variable          无符号8位整型变量  */
+   8          typedef signed   char  S8;       /* defined for signed 8-bits integer variable            有符号8位整型变量  */
+   9          typedef unsigned int   U16;      /* defined for unsigned 16-bits integer variable         无符号16位整型变量 */
+  10          typedef signed   int   S16;      /* defined for signed 16-bits integer variable           有符号16位整型变量 */
+  11          typedef unsigned long  U32;      /* defined for unsigned 32-bits integer variable         无符号32位整型变量 */
+  12          typedef signed   long  S32;      /* defined for signed 32-bits integer variable           有符号32位整型变量 */
+  13          typedef float          F32;      /* single precision floating point variable (32bits) 单精度浮点数（32位长
+             -度） */
+  14          typedef double         F64;      /* double precision floating point variable (64bits) 双精度浮点数（64位长
+             -度） */ 
+  15          
+  16          //-----------------------------------------------------------------------------
+  17          // 全局变量
+  18          uchar LED[8];   //用于LED的8位显示缓存
+  19          U8  U8FLAG,k;
+  20          U8  U8count,U8temp;
+  21          U8  U8T_data_H,U8T_data_L,U8RH_data_H,U8RH_data_L,U8checkdata;
+  22          U8  U8T_data_H_temp,U8T_data_L_temp,U8RH_data_H_temp,U8RH_data_L_temp,U8checkdata_temp;
+  23          U8  U8comdata;
+  24          U8  outdata[5];  //定义发送的字节数        
+  25          U8  indata[5];
+  26          U8  count, count_r=0;
+  27          U16 U16temp1,U16temp2;
+  28          
+  29           //-----------------------------------------------------------------------------
+  30          // 函数原形定义
+  31          
+  32          void main (void);                                       // 主函数
+  33          void LED4_Display (void);                       // LED显示
+  34          void LED_OUT(uchar X);                          // LED单字节串行移位函数
+  35          
+  36          unsigned char code LED_0F[];            // LED字模表
+  37          
+  38          sbit DIO = P0^2;                                //串行数据输入
+  39          sbit RCLK  = P0^1;                              //时钟脉冲信号——上升沿有效
+  40          sbit SCLK = P0^0;                               //打入信号————上升沿有效
+  41          sbit dht  = P0^3 ;         //DHT-11     温度传感器
+  42          sbit fire = P3^7;      //气体传感器
+  43          sbit bi =P3^6;         //蜂鸣器    
+  44          sbit CLK=P2^2;         //时钟信号
+  45          sbit ST=P2^1;          //启动信号
+  46          sbit EOC=P2^3;         //转换结束信号
+  47          sbit OE=P2^0;          //输出使能
+  48          sbit key=P3^3;         //按键
+  49          sbit rain=P2^7;            //雨量报警接口
+  50          sbit light=P2^6;           //光敏电阻
+  51          sbit led=P2^4;             
+  52          //****************************************//
+  53          
+C51 COMPILER V9.01   74HC595                                                               05/26/2017 13:04:34 PAGE 2   
+
+  54          void Delay(U16 j)
+  55          {      U8 i;
+  56   1          for(;j>0;j--)
+  57   1        {     
+  58   2              for(i=0;i<27;i++);
+  59   2      
+  60   2        }
+  61   1      }
+  62          
+  63          void Delay_10us(void)
+  64          {
+  65   1              U8 i;
+  66   1              i--;
+  67   1              i--;
+  68   1              i--;
+  69   1              i--;
+  70   1              i--;
+  71   1              i--;
+  72   1      }
+  73                  
+  74              void  COM(void)
+  75            {
+  76   1       
+  77   1              U8 i;
+  78   1            
+  79   1       for(i=0;i<8;i++)          
+  80   1          {
+  81   2              
+  82   2                  U8FLAG=2;   
+  83   2              while((!dht)&&U8FLAG++);
+  84   2                      Delay_10us();
+  85   2                  Delay_10us();
+  86   2                      Delay_10us();
+  87   2                      U8temp=0;
+  88   2           if(dht)U8temp=1;
+  89   2                  U8FLAG=2;
+  90   2               while((dht)&&U8FLAG++);
+  91   2              //超时则跳出for循环               
+  92   2               if(U8FLAG==1)break;
+  93   2              //判断数据位是0还是1     
+  94   2                 
+  95   2              // 如果高电平高过预定0高电平值则数据位为 1 
+  96   2               
+  97   2                 U8comdata<<=1;
+  98   2                 U8comdata|=U8temp;        //0
+  99   2           }//rof
+ 100   1         
+ 101   1      }
+ 102          
+ 103                  //--------------------------------
+ 104                  //-----湿度读取子程序 ------------
+ 105                  //--------------------------------
+ 106                  //----以下变量均为全局变量--------
+ 107                  //----温度高8位== U8T_data_H------
+ 108                  //----温度低8位== U8T_data_L------
+ 109                  //----湿度高8位== U8RH_data_H-----
+ 110                  //----湿度低8位== U8RH_data_L-----
+ 111                  //----校验 8位 == U8checkdata-----
+ 112                  //----调用相关子程序如下----------
+ 113                  //---- Delay();, Delay_10us();,COM(); 
+ 114                  //--------------------------------
+ 115          
+C51 COMPILER V9.01   74HC595                                                               05/26/2017 13:04:34 PAGE 3   
+
+ 116          void RH(void)
+ 117          {
+ 118   1        //主机拉低18ms 
+ 119   1         dht=0;
+ 120   1         Delay(180);
+ 121   1         dht=1;
+ 122   1       //总线由上拉电阻拉高 主机延时20us
+ 123   1         Delay_10us();
+ 124   1         Delay_10us();
+ 125   1         Delay_10us();
+ 126   1         Delay_10us();
+ 127   1       //主机设为输入 判断从机响应信号 
+ 128   1         dht=1;
+ 129   1       //判断从机是否有低电平响应信号 如不响应则跳出，响应则向下运行    
+ 130   1         if(!dht)              //T !    
+ 131   1         {
+ 132   2         U8FLAG=2;
+ 133   2       //判断从机是否发出 80us 的低电平响应信号是否结束        
+ 134   2         while((!dht)&&U8FLAG++);
+ 135   2         U8FLAG=2;
+ 136   2       //判断从机是否发出 80us 的高电平，如发出则进入数据接收状态
+ 137   2         while((dht)&&U8FLAG++);
+ 138   2       //数据接收状态          
+ 139   2         COM();
+ 140   2         U8RH_data_H_temp=U8comdata;
+ 141   2         COM();
+ 142   2         U8RH_data_L_temp=U8comdata;
+ 143   2         COM();
+ 144   2         U8T_data_H_temp=U8comdata;
+ 145   2         COM();
+ 146   2         U8T_data_L_temp=U8comdata;
+ 147   2         COM();
+ 148   2         U8checkdata_temp=U8comdata;
+ 149   2         dht=1;
+ 150   2       //数据校验 
+ 151   2       
+ 152   2         U8temp=(U8T_data_H_temp+U8T_data_L_temp+U8RH_data_H_temp+U8RH_data_L_temp);
+ 153   2         if(U8temp==U8checkdata_temp)
+ 154   2         {
+ 155   3                U8RH_data_H=U8RH_data_H_temp;
+ 156   3                U8RH_data_L=U8RH_data_L_temp;
+ 157   3                U8T_data_H=U8T_data_H_temp;
+ 158   3                U8T_data_L=U8T_data_L_temp;
+ 159   3                U8checkdata=U8checkdata_temp;
+ 160   3         }//fi
+ 161   2         }//fi
+ 162   1      
+ 163   1      }
+ 164          //*****************************************************************************
+ 165          // 主程序
+ 166          //
+ 167          void main (void) 
+ 168          {
+ 169   1          int temp,flag=0;
+ 170   1      
+ 171   1              TMOD=0x02; //T1 工作模式 2
+ 172   1              TH0=0xFE;
+ 173   1              TL0=0xFE;
+ 174   1              IE=0x82;
+ 175   1              TR0=1;
+ 176   1      
+ 177   1              while(1)
+C51 COMPILER V9.01   74HC595                                                               05/26/2017 13:04:34 PAGE 4   
+
+ 178   1              {
+ 179   2      
+ 180   2              ST=0;ST=1;ST=0;    //启动 A/D 转换
+ 181   2              while(EOC==0);     //等待转换完成
+ 182   2              OE=1; 
+ 183   2      
+ 184   2                temp=P1;
+ 185   2                if(temp<15)                                      //降雨量的量化
+ 186   2                temp=10;
+ 187   2                else if(15<temp&&temp<25)
+ 188   2                temp=20;
+ 189   2                else if(25<temp&&temp<35)
+ 190   2                temp=30;
+ 191   2                else if(35<temp)
+ 192   2                temp=40;
+ 193   2                 
+ 194   2                  OE=0;
+ 195   2               
+ 196   2                 if(key==0)
+ 197   2               {     
+ 198   3                              Delay(1000);               //消除抖动
+ 199   3                              if(key==0)
+ 200   3                                flag++;
+ 201   3               }                
+ 202   2      
+ 203   2                if(flag%2==0)
+ 204   2                {
+ 205   3                         RH();                                        //温湿度读取函数
+ 206   3                         LED[3]=U8RH_data_H/10;
+ 207   3                         LED[2]=U8RH_data_H%10;
+ 208   3                         LED[1]=U8T_data_H/10;
+ 209   3                         LED[0]=U8T_data_H%10;   //数码管显示湿度温度
+ 210   3                         LED4_Display ();
+ 211   3                 }
+ 212   2                 else
+ 213   2                 {
+ 214   3                   LED[2]=16;
+ 215   3                   LED[3]=light*5;     //光强 （0是白天 5是黑夜），夜间自动开灯
+ 216   3                   LED[0]=16;
+ 217   3                   LED[1]=temp/10;     //雨量（4个等级）
+ 218   3                   LED4_Display ();
+ 219   3                 }
+ 220   2                                                                                      
+ 221   2                 if(fire==0||rain==0)          //发生火灾或降雨量过大
+ 222   2                   {bi=0;}                             //蜂鸣器报警
+ 223   2                 if(light==1)                          //如果在夜间
+ 224   2                  {led=0;}                             //LED点亮
+ 225   2                 else                                         //正常情况下都关闭
+ 226   2                   {bi=1;led=1;}
+ 227   2              } 
+ 228   1      }
+ 229                   
+ 230          void Timer0_INT() interrupt 1
+ 231          {
+ 232   1              CLK=~CLK;                                                 //ADC0809需要500KHz的信号
+ 233   1      }
+ 234          
+ 235          void LED4_Display (void)
+ 236          {
+ 237   1              unsigned char code *led_table;          // 查表指针
+ 238   1              uchar i;
+ 239   1              //显示第1位
+C51 COMPILER V9.01   74HC595                                                               05/26/2017 13:04:34 PAGE 5   
+
+ 240   1              led_table = LED_0F + LED[0];
+ 241   1              i = *led_table;
+ 242   1      
+ 243   1              LED_OUT(i);                     
+ 244   1              LED_OUT(0x01);          
+ 245   1      
+ 246   1              RCLK = 0;
+ 247   1              RCLK = 1;
+ 248   1              //显示第2位
+ 249   1              led_table = LED_0F + LED[1];
+ 250   1              i = *led_table;
+ 251   1      
+ 252   1              LED_OUT(i);             
+ 253   1              LED_OUT(0x02);          
+ 254   1      
+ 255   1              RCLK = 0;
+ 256   1              RCLK = 1;
+ 257   1              //显示第3位
+ 258   1              led_table = LED_0F + LED[2];
+ 259   1              i = *led_table;
+ 260   1      
+ 261   1              LED_OUT(i);                     
+ 262   1              LED_OUT(0x04);  
+ 263   1      
+ 264   1              RCLK = 0;
+ 265   1              RCLK = 1;
+ 266   1              //显示第4位
+ 267   1              led_table = LED_0F + LED[3];
+ 268   1              i = *led_table;
+ 269   1      
+ 270   1              LED_OUT(i);                     
+ 271   1              LED_OUT(0x08);          
+ 272   1      
+ 273   1              RCLK = 0;
+ 274   1              RCLK = 1;
+ 275   1      }
+ 276          
+ 277          void LED_OUT(uchar X)
+ 278          {
+ 279   1              uchar i;
+ 280   1              for(i=8;i>=1;i--)
+ 281   1              {
+ 282   2                      if (X&0x80) DIO=1; else DIO=0;
+ 283   2                      X<<=1;
+ 284   2                      SCLK = 0;
+ 285   2                      SCLK = 1;
+ 286   2              }
+ 287   1      }
+ 288          
+ 289          unsigned char code LED_0F[] = 
+ 290          {// 0    1        2        3    4        5        6        7    8        9        A        b    C    d    E    F    -
+ 291                  0xC0,0xF9,0xA4,0xB0,0x99,0x92,0x82,0xF8,0x80,0x90,0x8C,0xBF,0xC6,0xA1,0x86,0xFF,0xbf
+ 292          };
+ 293          
+ 294          
+ 295          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    602    ----
+   CONSTANT SIZE    =     17    ----
+   XDATA SIZE       =   ----    ----
+C51 COMPILER V9.01   74HC595                                                               05/26/2017 13:04:34 PAGE 6   
+
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     39       5
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
