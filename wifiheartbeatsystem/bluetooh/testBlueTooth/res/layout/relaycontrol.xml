@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center_horizontal"
+    android:orientation="vertical" >
+
+   
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical" >
+
+		      <Button 
+		    android:layout_width="fill_parent" 
+		    android:layout_height="wrap_content" 
+		    android:text="button1"
+		    android:id="@+id/button1"  
+		    />
+		    
+		     <Button 
+		    android:layout_width="fill_parent" 
+		    android:layout_height="wrap_content" 
+		    android:text="button2"
+		    android:id="@+id/button2"  
+		    />
+		     <Button 
+		    android:layout_width="fill_parent" 
+		    android:layout_height="wrap_content" 
+		    android:text="button3"
+		    android:id="@+id/button3"  
+		    />
+		     <Button 
+		    android:layout_width="fill_parent" 
+		    android:layout_height="wrap_content" 
+		    android:text="button4"
+		    android:id="@+id/button4"  
+		    />
+		     <Button 
+		    android:layout_width="fill_parent" 
+		    android:layout_height="wrap_content" 
+		    android:text="button5"
+		    android:id="@+id/button5"  
+		    />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout5"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center" >
+
+        <Button
+            android:id="@+id/release"
+            android:layout_width="160dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="关闭" />
+
+        <Button
+            android:id="@+id/btBack"
+            android:layout_width="160dip"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="返回" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <EditText
+            android:id="@+id/etShow"
+            android:layout_width="match_parent"
+            android:layout_height="290dip"
+            android:layout_weight="1"
+            android:singleLine="false"   
+   			 android:scrollbars="vertical"
+            android:inputType="textMultiLine" 
+            android:hint="接收区">
+            <requestFocus />
+        </EditText>
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/linearLayout7"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <EditText
+            android:id="@+id/etSend"
+            android:layout_width="match_parent"
+            android:layout_height="100dip"
+             android:singleLine="false"   
+   			 android:scrollbars="vertical"
+            android:inputType="textMultiLine" 
+            android:hint="发送区"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btSend"
+        android:layout_width="80dip"
+        android:layout_height="wrap_content"
+        android:text="发送"
+        android:layout_gravity="right" />
+    
+</LinearLayout>

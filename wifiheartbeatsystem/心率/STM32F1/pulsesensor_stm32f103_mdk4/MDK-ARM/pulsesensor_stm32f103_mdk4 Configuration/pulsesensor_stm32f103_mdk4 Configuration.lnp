@@ -1,0 +1,26 @@
+--cpu Cortex-M3
+"pulsesensor_stm32f103_mdk4 configuration\startup_stm32f103xb.o"
+"pulsesensor_stm32f103_mdk4 configuration\stm32f1xx_it.o"
+"pulsesensor_stm32f103_mdk4 configuration\main.o"
+"pulsesensor_stm32f103_mdk4 configuration\stm32f1xx_hal_msp.o"
+"pulsesensor_stm32f103_mdk4 configuration\system_stm32f1xx.o"
+"pulsesensor_stm32f103_mdk4 configuration\stm32f1xx_hal_tim.o"
+"pulsesensor_stm32f103_mdk4 configuration\stm32f1xx_hal_gpio_ex.o"
+"pulsesensor_stm32f103_mdk4 configuration\stm32f1xx_hal_rcc_ex.o"
+"pulsesensor_stm32f103_mdk4 configuration\stm32f1xx_hal.o"
+"pulsesensor_stm32f103_mdk4 configuration\stm32f1xx_hal_pwr.o"
+"pulsesensor_stm32f103_mdk4 configuration\stm32f1xx_hal_cortex.o"
+"pulsesensor_stm32f103_mdk4 configuration\stm32f1xx_hal_flash_ex.o"
+"pulsesensor_stm32f103_mdk4 configuration\stm32f1xx_hal_gpio.o"
+"pulsesensor_stm32f103_mdk4 configuration\stm32f1xx_hal_tim_ex.o"
+"pulsesensor_stm32f103_mdk4 configuration\stm32f1xx_hal_rcc.o"
+"pulsesensor_stm32f103_mdk4 configuration\stm32f1xx_hal_adc.o"
+"pulsesensor_stm32f103_mdk4 configuration\stm32f1xx_hal_flash.o"
+"pulsesensor_stm32f103_mdk4 configuration\stm32f1xx_hal_dma.o"
+"pulsesensor_stm32f103_mdk4 configuration\stm32f1xx_hal_uart.o"
+"pulsesensor_stm32f103_mdk4 configuration\stm32f1xx_hal_adc_ex.o"
+--library_type=microlib --strict --scatter "pulsesensor_stm32f103_mdk4 Configuration\pulsesensor_stm32f103_mdk4 Configuration.sct"
+
+--diag_suppress=L6329 --summary_stderr --info summarysizes --map --xref --callgraph --symbols
+--info sizes --info totals --info unused --info veneers
+--list "pulsesensor_stm32f103_mdk4 Configuration.map" -o "pulsesensor_stm32f103_mdk4 Configuration\pulsesensor_stm32f103_mdk4 Configuration.axf"

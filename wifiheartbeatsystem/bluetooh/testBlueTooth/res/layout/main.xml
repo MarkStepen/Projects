@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" 
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+
+	<LinearLayout android:id="@+id/LinearLayout01"
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content" 
+		android:orientation="horizontal">
+		
+		<TextView android:id="@+id/TextView01" 
+		android:layout_height="wrap_content" 
+		android:text="手机蓝牙开关" 
+		android:layout_width="100dip">
+		</TextView>
+		<ToggleButton android:layout_height="wrap_content" 
+		android:text="蓝牙开关" 
+		android:layout_width="wrap_content" 
+		android:id="@+id/tbtnSwitch">
+		</ToggleButton>	
+		
+	</LinearLayout>
+	<LinearLayout android:id="@+id/LinearLayout02"
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content"
+		android:orientation="vertical">
+		
+		<Button android:layout_height="wrap_content" 
+		android:text="本机蓝牙可见" 
+		android:id="@+id/btnDis" 
+		android:layout_width="160dip">
+		</Button>
+		<Button android:layout_height="wrap_content" 
+		android:id="@+id/btnExit"
+		android:text="退出程序" 
+		android:layout_width="160dip">
+		</Button>
+		<Button android:layout_height="wrap_content" 
+		android:id="@+id/btnSearch"
+		android:text="搜索设备" 
+		android:layout_width="160dip">
+		</Button>
+		
+	</LinearLayout>
+
+	<ListView android:layout_width="fill_parent" 
+	android:id="@+id/lvDevices"
+		android:layout_height="fill_parent">
+	</ListView>
+
+
+
+
+
+</LinearLayout>
+
