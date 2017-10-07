@@ -10,6 +10,7 @@
 #include "stm32f10x.h"
 #include "stm32f10x_conf.h"
 #include "stm32f10x_flash.h"
+#include "stm32f10x_iwdg.h"
 
 u32   Animal_Heat=0;     
 u16    Animal_Heat_Vol[30];                       // 采集温度的电压值 
@@ -154,36 +155,71 @@ void RCC_Configuration(void)
                            RCC_APB1Periph_UART5|RCC_APB1Periph_BKP|RCC_APB1Periph_PWR|RCC_APB1Periph_DAC, ENABLE);
 }
 
-int main(void)
+void upload_data(void)
+{
+	UART1_Send_DATA('B');
+	UART1_Send_DATA(BPM);
+	USART_SendString("\r\n");
+	UART1_Send_DATA('T');
+	UART1_Send_DATA(tempvalue/100);
+	USART_SendString("\r\n");
+}
+
+void IWDG_Init()
+{
+
+//Enable write access to IWDG_PR and IWDG_RLR registers
+
+IWDG_WriteAccessCmd(IWDG_WriteAccess_Enable);
+
+//Configure the IWDG prescaler
+
+IWDG_SetPrescaler(IWDG_Prescaler_16); //10k
+
+//Configure the IWDG counter value
+
+IWDG_SetReload(2500); // Bits11:0 RL[11:0]: Watchdog counter reload value ~ Only 12bit ~max value = 4096
+
+IWDG_ReloadCounter();
+
+IWDG_Enable();
+
+}
+
+void sysconfig(void)
 {
 	delay_init();
-	//LED_Init();
-	NVIC_Configuration();
+// LED_Init();
+	IWDG_Init();								 // 看门狗初始化
+	NVIC_Configuration();        // 系统中断向量配置
 	RCC_Configuration();         // 系统时钟配置
 	ADC1_Configuration();        // ADC1配置-心率传感器
 	ADC2_Configuration();	  	   // ADC2配置-体温传感器
-	uart_init(115200);           // 串口
+	uart_init(115200);           // 串口1
+//  uart3_init(9600);            // 串口3
 	TIM3_Int_Init(1999,55);      // 定时器3配置 周期2ms 系统56M (56MHz/(55+1))*(1999+1)=2ms
 	TIM2_Configuration();        // 定时器2配置 10ms 56/56*1
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3 , ENABLE);	//TIM3 重新开时钟，开始计时 
 	TIM_Cmd(TIM2, ENABLE);    	 // 定时器2启动
+}
 
+int main(void)
+{
+  sysconfig();
+	
 	while (1)
   {
-//    sendDataToProcessing('S', Signal); // send Processing the raw Pulse Sensor data	
+      sendDataToProcessing('S', Signal); // send Processing the raw Pulse Sensor data	
 		if (QS == true)
 		{
-			sendDataToProcessing('B',BPM);   // send heart rate with a 'B' prefix
-			sendDatatemp('T',tempvalue/100);
-	 
-			//printf("****B %d \r\n",BPM);	
-		//	sendDataToProcessing('Q',IBI);   // send time between beats with a 'Q' prefix
-			//printf("****Q %d \r\n",IBI);					
-		  QS = false; // reset the Quantified Self flag for next time	
+	  	sendDataToProcessing('B',BPM);   // send heart rate with a 'B' prefix
+			sendDataToProcessing('Q',IBI);   // send time between beats with a 'Q' prefix			
+	    sendDatatemp('T',tempvalue/100); //发送温度值
+			IWDG_ReloadCounter();            //喂狗狗
+		  QS = false;                      // reset the Quantified Self flag for next time	
 		}		
-		delay_ms(90);	
-		Reduced_Temperature();       // 体温采集
-
+			delay_ms(20);	
+			Reduced_Temperature();           // 体温采集
 	}
 }
 

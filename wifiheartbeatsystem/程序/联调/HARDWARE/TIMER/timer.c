@@ -34,14 +34,13 @@ void TIM3_Int_Init(u16 arr,u16 psc)
 	
 	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM3 , ENABLE); 
 	 
-  TIM_TimeBaseStructure.TIM_Period = arr;      
-  TIM_TimeBaseStructure.TIM_Prescaler =psc;	    
-  TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1 ;	
-  TIM_TimeBaseStructure.TIM_CounterMode =TIM_CounterMode_Up;
+  TIM_TimeBaseStructure.TIM_Period        = arr;      
+  TIM_TimeBaseStructure.TIM_Prescaler     = psc;	    
+  TIM_TimeBaseStructure.TIM_ClockDivision = TIM_CKD_DIV1;	
+  TIM_TimeBaseStructure.TIM_CounterMode   = TIM_CounterMode_Up;
   TIM_TimeBaseInit(TIM3, &TIM_TimeBaseStructure);
 
-  TIM_SelectOutputTrigger(TIM3,TIM_TRGOSource_Update);
-	/*选择update event作为TRGO,利用TIM3触发ADC通道 */
+  TIM_SelectOutputTrigger(TIM3,TIM_TRGOSource_Update);	/*选择update event作为TRGO,利用TIM3触发ADC通道 */
 	//每个定时周期结束后触发一次
 	TIM_ClearFlag(TIM3, TIM_FLAG_Update);
   TIM_ITConfig(TIM3,TIM_IT_Update,ENABLE);
