@@ -38,7 +38,7 @@ void sendDataToProcessing(u8 symbol, int16_t dat )
 void sendDatatemp(u8 symbol, float dat )
 {
     putchar(symbol);       // symbol prefix tells Processing what type of data is coming
-		printf("%.2f\r\n",dat);	 // the data to send culminating in a carriage return
+		printf("%.1f\r\n",dat);	 // the data to send culminating in a carriage return
 }
 
 void Get_Resistance_Value()
